@@ -1,9 +1,11 @@
 import customtkinter as ctk
+import quest2
 import subprocess
 
 class QuestFrame(ctk.CTkFrame):
-    def __init__(self, master, nome, cpf, email, voltar_callback, proximo_callback, *args, **kwargs):
+    def __init__(self, master, voltar_callback, proximo_callback, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        print("ACESSOU QUEST1")
 
         self.voltar_callback = voltar_callback
         self.proximo_callback = proximo_callback
@@ -65,27 +67,37 @@ class QuestFrame(ctk.CTkFrame):
         self.lbl_erro = ctk.CTkLabel(self, text="", font=("Arial", 12, "bold"), text_color="red")
         self.lbl_erro.pack(pady=5)
 
-        # Criando frame para os botões na parte inferior
+        # Criando frame para botões e fixando na parte inferior
         self.frame_botoes = ctk.CTkFrame(self)
-        self.frame_botoes.pack(fill="x", pady=10)
+        self.frame_botoes.pack(fill="x", side="bottom")  # Ocupar toda a largura
 
         # Botão Voltar
         self.btn_voltar = ctk.CTkButton(self.frame_botoes, text="Voltar", command=self.voltar_callback, fg_color="red")
-        self.btn_voltar.pack(side="left", padx=10, expand=True)
+        self.btn_voltar.pack(side="left", fill="x", expand=True, padx=10, pady=5)
 
-        # Botão Próximas Questões
-        self.btn_proximo = ctk.CTkButton(self.frame_botoes, text="Próximas Questões", command=self.processar_respostas)
-        self.btn_proximo.pack(side="right", padx=10, expand=True)
+        # Botão Próximo
+        self.btn_proximo = ctk.CTkButton(self.frame_botoes, text="Próximo", command=self.processar_respostas)
+        self.btn_proximo.pack(side="right", fill="x", expand=True, padx=10, pady=5)
 
     def processar_respostas(self):
         """Captura as respostas do usuário e exibe erro em vermelho se houver números repetidos"""
-        for i, opcoes in self.respostas_vars.items():
+        '''for i, opcoes in self.respostas_vars.items():
             valores = [var.get() for var in opcoes.values()]
             if len(valores) != len(set(valores)):  # Verifica se há valores repetidos
                 self.lbl_erro.configure(text=f"Erro na Pergunta {i+1}: Os números não podem se repetir!")
-                return
+                return'''
 
-    # Se não houver erro, limpa a mensagem e chama o próximo questionário
+        # Se não houver erro, limpa a mensagem e chama o próximo questionário
         self.lbl_erro.configure(text="")
-        self.master.destroy()  # Fecha a janela atual
-        subprocess.run(["python", "quest2.py"])  # Executa quest2.py
+        self.mudar_frame_direito_quest2()  # Chama a troca de frame
+
+    def mudar_frame_direito_quest2(self):
+        """Troca o frame para exibir as perguntas do quest2.py"""
+        for widget in self.master.winfo_children():
+            widget.destroy()  # Remove todos os widgets atuais
+
+        # Criar um novo frame com as perguntas de quest2.py
+        quest_frame = quest2.QuestFrame(self.master, voltar_callback=self.voltar_callback, proximo_callback=self.proximo_callback)
+        quest_frame.pack(fill="both", expand=True)  # Garante que o frame seja exibido corretamente
+
+

@@ -3,19 +3,16 @@ import os
 
 # Função para salvar os dados no arquivo JSON
 def salvar_dados(nome, cpf, email):
-    # Cria o nome do arquivo com base no nome do usuário
-    nome_arquivo = f"{nome.replace(' ', '_')}_dados.json"
-    
-    dados = {
-        "nome": nome,
-        "cpf": cpf,
-        "email": email
-    }
-    
-    # Salva os dados no arquivo JSON específico para o usuário
-    with open(nome_arquivo, 'w') as arquivo:
-        json.dump(dados, arquivo)
-    print(f"Arquivo '{nome_arquivo}' criado com sucesso!")  # Mensagem de sucesso no terminal
+    try:
+        nome_arquivo = f"{nome.replace(' ', '_')}_dados.json"
+        dados = {"nome": nome, "cpf": cpf, "email": email}
+        
+        with open(nome_arquivo, 'w', encoding='utf-8') as arquivo:
+            json.dump(dados, arquivo, indent=4)  # Indentação para melhor leitura
+        
+        print(f"Arquivo '{nome_arquivo}' criado com sucesso!")  
+    except Exception as e:
+        print(f"Erro ao salvar o arquivo: {e}")
 
 # Função para carregar os dados do arquivo JSON
 def carregar_dados(nome):
